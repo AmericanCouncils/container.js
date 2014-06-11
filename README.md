@@ -71,6 +71,8 @@ container.share('foo', function(c) {
 
 container.extend('foo', function(service, c) {
   service.callSomeMethod(c.get('some.dependency'));
+  
+  return service; //make sure to return the service that you've modified
 });
 ```
 
