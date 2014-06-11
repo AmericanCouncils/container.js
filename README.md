@@ -17,6 +17,9 @@ container.get('foo');     // 23
 container.get('qux');     // {param: "bar"}
 ```
 
+> Don't register functions via `set`, functions can be registered in several ways
+> described below.
+
 ## Sharing instances of services ##
 
 Services are instances of objects that are returned by the container.  When declaring a service, you
@@ -70,10 +73,6 @@ container.extend('foo', function(service, c) {
   service.callSomeMethod(c.get('some.dependency'));
 });
 ```
-
-Extensions are called when a service is created, meaning that for a shared service, any given
-extension will only run once when the service is initialized.  If you extend a factory service,
-the extensions will run each time a new instance created.
 
 ## Protect ##
 
