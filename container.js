@@ -45,7 +45,7 @@
             var extensions = self.extensions[key];
             if (extensions) {
               for(var i = 0; i < extensions.length; i++) {
-                extensions[i].call(self, instance, self);
+                instance = extensions[i].call(self, instance, self);
               }
             }
           }
@@ -90,7 +90,7 @@
         var extensions = self.extensions[key];
         if (extensions) {
           for(var i = 0; i < extensions.length; i++) {
-            extensions[i].call(self, instance, self);
+            instance = extensions[i].call(self, instance, self);
           }
         }
         
