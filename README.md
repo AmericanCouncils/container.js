@@ -14,7 +14,7 @@ container.set('foo', 23);
 container.set('bar', {param: 'bar'});
 
 container.get('foo');     // 23
-container.get('qux');     // {param: "bar"}
+container.get('bar');     // {param: "bar"}
 ```
 
 > Don't register functions via `set`, functions can be registered in several ways
@@ -64,7 +64,7 @@ var s2 = container.get('foo');
 Sometimes a service should have additional logic or setup run before it is returned from `get`.
 You can do this via the `extend` method:
 
-```
+```js
 container.share('foo', function(c) {
   return new Service();
 });
