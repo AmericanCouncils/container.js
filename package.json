@@ -7,7 +7,7 @@
     "test": "mocha"
   },
   "keywords": [
-    "dependency inection",
+    "dependency injection",
     "container"
   ],
   "author": "Evan Villemez",
