@@ -150,6 +150,35 @@ describe("Container", function() {
     });
   });
   
+  it("Container.inject should return a function that will be injected with dependencies", function () {
+    var listener = function (service1, service2) {
+      return service1.param + service2.param;
+    };
+    
+    var c = new Container();
+    c.share('foo', function() { return new Service(2); });
+    c.share('bar', function() { return new Service(3); });
+    
+    var injected = c.inject(['foo','bar', listener]);
+    
+    assert.isTrue(5 === injected());
+  });
+  
+  it("Container.inject should detect inject annotations in the $inject property", function() {
+    var listener = function (service1, service2) {
+      return service1.param + service2.param;
+    };
+    listener.$inject = ['foo','bar'];
+    
+    var c = new Container();
+    c.share('foo', function() { return new Service(2); });
+    c.share('bar', function() { return new Service(3); });
+    
+    var injected = c.inject(listener);
+    
+    assert.isTrue(5 === injected());
+  });
+      
   it.skip("Container.get should detect circular references");
   
 });
