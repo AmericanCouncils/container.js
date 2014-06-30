@@ -23,7 +23,11 @@
     /**
      * Set a parameter or a shared service instance.
      */
-    set: function(key, def) {      
+    set: function(key, def) {
+      if (def instanceof Function) {
+        throw new Error('You cannot pass functions via Container.set, as that is ambiguous.  Use alternate methods instead.');
+      }
+      
       this.defs[key] = def;
       
       return this;

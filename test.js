@@ -35,6 +35,15 @@ describe("Container", function() {
     assert.isTrue(s1 === s2);
   });
   
+  it("Container.set should not allow setting functions", function() {
+    var c = new Container();
+    assert.throws(function() {
+      c.set('foo', function() {
+        return 'bar';
+      });
+    });
+  });
+  
   it("Container.share should set shared service factories", function() {
     var c = new Container();
 
