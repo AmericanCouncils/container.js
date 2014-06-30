@@ -35,6 +35,15 @@ describe("Container", function() {
     assert.isTrue(s1 === s2);
   });
   
+  it("Container.set should not allow setting functions", function() {
+    var c = new Container();
+    assert.throws(function() {
+      c.set('foo', function() {
+        return 'bar';
+      });
+    });
+  });
+  
   it("Container.share should set shared service factories", function() {
     var c = new Container();
 
@@ -69,9 +78,13 @@ describe("Container", function() {
     c.set('qux', 100);
     c.extend('foo', function(service, c) {
       service.anotherParam = 500;
+      
+      return service;
     });
     c.extend('foo', function(service, c) {
       service.param = c.get('qux');
+      
+      return service;
     });
     
     var s = c.get('foo');
@@ -103,6 +116,40 @@ describe("Container", function() {
     assert.isTrue(5 == sum(2, 3));
   });
 
-  it("Container.get should detect circular references");
+  it("Container.share should detect when services are not properly returned", function() {
+    var c = new Container();
+    c.share('foo', function() {
+      var service = new Service(32); //not returning it on purpose
+    });
+    
+    assert.throw(function() {
+      c.get('foo');
+    });
+  });
+  
+  it("Container.factory should detect when services are not properly returned", function() {
+    var c = new Container();
+    c.factory('foo', function() {
+      var service = new Service(32); //not returning it on purpose
+    });
+    
+    assert.throw(function() {
+      c.get('foo');
+    });
+  });
+  
+  it("Container.extend should detect extensions failing to return service", function() {
+    var c = new Container();
+    c.share('foo', function() { return new Service (32); });
+    c.extend('foo', function (service, c) {
+      service.bar = 'oops';
+    });
+    
+    assert.throw(function() {
+      c.get('foo');
+    });
+  });
+  
+  it.skip("Container.get should detect circular references");
   
 });

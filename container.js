@@ -23,7 +23,11 @@
     /**
      * Set a parameter or a shared service instance.
      */
-    set: function(key, def) {      
+    set: function(key, def) {
+      if (def instanceof Function) {
+        throw new Error('You cannot pass functions via Container.set, as that is ambiguous.  Use alternate methods instead.');
+      }
+      
       this.defs[key] = def;
       
       return this;
@@ -41,13 +45,12 @@
         return function() {
           if (instance === undefined) {
             instance = def.call(self, self);
-
-            var extensions = self.extensions[key];
-            if (extensions) {
-              for(var i = 0; i < extensions.length; i++) {
-                instance = extensions[i].call(self, instance, self);
-              }
+            
+            if (!instance) {
+              throw new Error('Service function for ['+key+'] did not return anything.  Did you forget a return statement?');
             }
+
+            return self.__extend(key, instance);
           }
           
           return instance;
@@ -87,14 +90,11 @@
       this.defs[key] = function() {
         var instance = def.call(self, self);
         
-        var extensions = self.extensions[key];
-        if (extensions) {
-          for(var i = 0; i < extensions.length; i++) {
-            instance = extensions[i].call(self, instance, self);
-          }
+        if (!instance) {
+          throw new Error('Service function for ['+key+'] did not return anything.  Did you forget a return statement?');
         }
         
-        return instance;
+        return self.__extend(key, instance);
       };
       
       return this;
@@ -107,6 +107,24 @@
       this.defs[key] = function() { return def; };
       
       return this;
+    },
+    
+    /**
+     * Private.  Used for calling registered extensions on a service instance.
+     */
+    __extend: function(key, instance) {
+      var extensions = this.extensions[key];
+      if (extensions) {
+        for(var i = 0; i < extensions.length; i++) {
+          instance = extensions[i].call(this, instance, this);
+          
+          if (!instance) {
+            throw new Error('An extension for ['+key+'] failed to return an instance.  Did you forget a return statement?');
+          }
+        }
+      }
+      
+      return instance;
     }
   };
   
