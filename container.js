@@ -110,6 +110,33 @@
     },
     
     /**
+     * If injection annotations are detected, returns a function that will be injected with declared dependencies when called.
+     * 
+     * Otherwise the original function is returned untouched.
+     */
+    inject: function(def) {
+      var self = this;
+      var fn, deps;
+
+      if (def instanceof Function && def.$inject) {
+        fn = def;
+        deps = def.$inject;
+      } else if (def instanceof Array) {
+        fn = def.pop();
+        deps = def;
+      } else {
+        return fn;
+      }
+      return function() {
+        var depsArray = [];
+        
+        deps.forEach(function(key) { depsArray.push(self.get(key)); });
+        
+        return fn.apply(null, depsArray);
+      };
+    },
+    
+    /**
      * Private.  Used for calling registered extensions on a service instance.
      */
     __extend: function(key, instance) {

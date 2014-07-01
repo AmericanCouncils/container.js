@@ -90,3 +90,31 @@ var sum = container.get('sum');
 
 sum(2,3);   //5
 ```
+
+## Inject ##
+
+You may want to pass along a function that will be injected with the proper dependencies when called.  For 
+example, this may be an event listener or callback for an asyncronous operation.  There are two ways to 
+inject a function:
+
+1. By passing an array listing the dependency names, with the function to wrap as the last argument:
+
+```js
+var callbackWithDependencies = container.inject(['service1','service2', function(dep1, dep2) {
+  //... do stuff
+}]);
+
+someSubsystem.doSomethingAsync(callbackWithDependencies);
+```
+
+2. Providing a function with an `$inject` annotation:
+
+```js
+var callbackWithDependencies = function(dep1, dep2) {
+  //...do stuff
+};
+callbackWithDependencies.$inject = ['service1','service2'];
+
+someSubsystem.doSomethingAsync(container.inject(callbackWithDependencies));
+```
+
